@@ -1,202 +1,93 @@
 from tkinter import *
 from time import *
-
 score = 0
+score_after=0
+Niveau = 0
+def cookie():    
+    global score
+    score+=1
+    Label(fenetre, text="Score ="+ str(score)).grid(row=2)
 
-NiveauW = 0
-NiveauM = 0
+def upgrade():
+    global Niveau
+    global score
+    if Niveau *2+50 <= score:
+        Niveau += 1
+        score = score-(Niveau *2+50)
+        Label(fenetre, text="Score ="+ str(score)).grid(row=2)
+        Label(fenetre, text="Achete un worker, tu as actuellement "+ str(Niveau) +" workers").grid(row=2, column = 1 )
+        Label(fenetre, text=f"Un worker coûte actuemmement {Niveau *2+50} cookies").grid(row=3, column = 1 )
 
-PrixW = 45
-PrixM = 150
-
-COOKIESPS = 0
-COOKIESPSajout = 0
-
-# stocke le temps de chaque clic
-clics = []
-
-
-def boucle():
-    global COOKIESPSajout, clics
-
-    maintenant = time()
-
-    # garde seulement les clics de la dernière seconde
-    clics = [t for t in clics if maintenant - t <= 1]
-
-    COOKIESPSajout = len(clics)
-
-    Label(
-        fenetre,
-        text=f"Score = {score} | Cookies/sec = {COOKIESPS + COOKIESPSajout}"
-    ).grid(row=2)
-
-    fenetre.after(50, boucle)
-
-
-def cookie():
-    global score, clics
-
-    score += 1
-
-    # ajoute le temps du clic
-    clics.append(time())
-
-
-def upgradeW():
-    global NiveauW, score, PrixW, COOKIESPS
-
-    if score >= PrixW:
-
-        NiveauW += 1
-
-        score -= PrixW
-
-        PrixW += 10
-
-        COOKIESPS += 1
-
-        Label(
-            fenetre,
-            text=f"Tu as actuellement {NiveauW} workers, Prix actuel : {PrixW}"
-        ).place(x=500, y=20)
-
-
-def upgradeM():
-    global NiveauM, score, PrixM, COOKIESPS
-
-    if score >= PrixM:
-
-        NiveauM += 1
-
-        score -= PrixM
-
-        PrixM += 10
-
-        COOKIESPS += 2
-
-        Label(
-            fenetre,
-            text=f"Tu as actuellement {NiveauM} Mamies, Prix actuel : {PrixM}"
-        ).place(x=500, y=70)
-
+    else:
+        fenetre_erreur = Toplevel(fenetre)
+        fenetre_erreur.title("ERREUR")
+        fenetre_erreur.geometry("550x150") 
+        
+        Label(fenetre_erreur, text="Pas assez de cookies", font=("Arial", 12, "bold")).pack(pady=10)
+        texte_erreur = "Les workers ne sont pas gratuits ! tu n'as pas assez pour en acheter, travail un peu par toi même !"
+        Label(fenetre_erreur, text=texte_erreur).pack(pady=5)
+        
+        Button(fenetre_erreur, text="Fermer", command=fenetre_erreur.destroy).pack(pady=10)
+        
 
 def passive():
-    global score, NiveauW, NiveauM
-
-    score += NiveauW + (NiveauM * 2)
-
+    global score
+    global Niveau
+    score += Niveau
     fenetre.after(1000, passive)
+    Label(fenetre, text="Score ="+ str(score)).grid(row=2)
 
 
 def ouvrir_explications():
-
     fenetre_info = Toplevel(fenetre)
-
-    fenetre_info.title("Explications")
-    fenetre_info.geometry("350x180")
-
-    Label(
-        fenetre_info,
-        text="À quoi servent les Workers ?",
-        font=("Arial", 12, "bold")
-    ).pack(pady=10)
-
-    texte_explicatif = (
-        "Chaque Worker génère 1 cookie/seconde.\n"
-        "Chaque Mamie génère 2 cookies/seconde."
-    )
-
-    Label(
-        fenetre_info,
-        text=texte_explicatif
-    ).pack(pady=10)
-
-    Button(
-        fenetre_info,
-        text="Fermer",
-        command=fenetre_info.destroy
-    ).pack(pady=10)
-
-
-def detruire():
-
+    fenetre_info.title("Explications des Workers")
+    fenetre_info.geometry("300x150") 
+    
+    Label(fenetre_info, text="À quoi servent les Workers ?", font=("Arial", 12, "bold")).pack(pady=10)
+    texte_explicatif = "Chaque worker acheté génère automatiquement\n1 cookie par seconde de manière passive !"
+    Label(fenetre_info, text=texte_explicatif).pack(pady=5)
+    
+    Button(fenetre_info, text="Fermer", command=fenetre_info.destroy).pack(pady=10)
+    
+def détruire():
     fenetre_info = Toplevel(fenetre)
+    fenetre.title("COOKIES")
+    fenetre_info.geometry("1080x1080") 
 
-    fenetre_info.title("COOKIES")
-    fenetre_info.geometry("1080x1080")
+    détruire()
 
+def cookie_par_sec():
+    global score
+    global score_after
 
-# ---------------- FENÊTRE ---------------- #
+    cps = score - score_after
+    score_after = score
+
+    Label(fenetre, text=f"{cps} Cookies par seconde").grid(row=3)
+
+    fenetre.after(1000, cookie_par_sec)
 
 fenetre = Tk()
-
 fenetre.title("Cookie Clicker")
-fenetre.geometry("900x600")
+Label(fenetre, text="Voici le cookie cliqueur, click sur le cookie").grid(row=0)
+#score
+Label(fenetre, text="Score ="+ str(score)).grid(row=2)
 
-# titre
-Label(
-    fenetre,
-    text="Voici le cookie cliqueur, clique sur le cookie"
-).grid(row=0)
-
-# score
-Label(
-    fenetre,
-    text="Score = 0"
-).grid(row=2)
-
-# passive income
 fenetre.after(1000, passive)
+fenetre.after(1000, cookie_par_sec)
+#pour le bouton de cookie
+photo = PhotoImage(file = r".\cookie.png") 
+Button(fenetre, image=photo, command = cookie).grid(row=4)
 
-# bouton cookie
-photo = PhotoImage(file=r".\cookie.png")
 
-Button(
-    fenetre,
-    image=photo,
-    command=cookie
-).grid(row=3)
+#Pour acheter des workers
+Label(fenetre, text="Achete un worker, tu as actuellement "+ str(Niveau) +" workers").grid(row=2, column = 1 )
+Button(fenetre, text= "Acheter", command = upgrade).grid(row=4, column = 1)
+Label(fenetre, text=f"Un worker coûte actuemmement {Niveau *2+50} cookies").grid(row=3, column = 1 )
 
-# Workers
-Label(
-    fenetre,
-    text=f"Tu as actuellement {NiveauW} workers, Prix actuel : {PrixW}"
-).place(x=500, y=20)
+Button(fenetre, text="Aide & Explications", command=ouvrir_explications).grid(row=5, column=0, columnspan=2, pady=10)
 
-Button(
-    fenetre,
-    text="Acheter",
-    command=upgradeW
-).place(x=500, y=40)
+Button(fenetre, text= "tout détruire ?", command = détruire).grid(row=7)
 
-# Mamies
-Label(
-    fenetre,
-    text=f"Tu as actuellement {NiveauM} Mamies, Prix actuel : {PrixM}"
-).place(x=500, y=70)
-
-Button(
-    fenetre,
-    text="Acheter",
-    command=upgradeM
-).place(x=500, y=100)
-
-# aide
-Button(
-    fenetre,
-    text="Aide & Explications",
-    command=ouvrir_explications
-).grid(row=4, column=0, columnspan=2, pady=10)
-
-# destruction
-Button(
-    fenetre,
-    text="Tout détruire ?",
-    command=detruire
-).grid(row=6)
-
-# boucle principale
-boucle()
 
 mainloop()
