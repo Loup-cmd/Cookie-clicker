@@ -180,7 +180,7 @@ Button(
     fenetre,
     text="Acheter",
     command=upgradeM
-).place(x=500, y=100)
+).place(x=500, y=90)
 
 # aide
 Button(
