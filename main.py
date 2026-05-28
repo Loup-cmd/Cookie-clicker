@@ -5,9 +5,11 @@ score = 0
 
 NiveauW = 0
 NiveauM = 0
+NiveauF = 0 
 
 PrixW = 45
 PrixM = 150
+PrixF = 500
 
 COOKIESPS = 0
 COOKIESPSajout = 0
@@ -79,6 +81,24 @@ def upgradeM():
             fenetre,
             text=f"Tu as actuellement {NiveauM} Mamies, Prix actuel : {PrixM}"
         ).place(x=500, y=70)
+        
+def upgradeF():
+    global NiveauF, score, PrixF, COOKIESPS
+
+    if score >= PrixF:
+
+        NiveauF += 1
+
+        score -= PrixF
+
+        PrixW += 50
+
+        COOKIESPS += 5
+
+        Label(
+            fenetre,
+            text=f"Tu as actuellement {NiveauF} workers, Prix actuel : {PrixF}"
+        ).place(x=500, y=100)
 
 
 def passive():
@@ -120,11 +140,10 @@ def ouvrir_explications():
 
 
 def detruire():
-
-    fenetre_info = Toplevel(fenetre)
-
-    fenetre_info.title("COOKIES")
-    fenetre_info.geometry("1080x1080")
+    while True:
+        fenetre_info = Toplevel(fenetre)
+        fenetre_info.title("COOKIES")
+        fenetre_info.geometry("1080x1080")
 
 
 # ---------------- FENÊTRE ---------------- #
@@ -181,6 +200,18 @@ Button(
     text="Acheter",
     command=upgradeM
 ).place(x=500, y=90)
+
+# Fermes
+Label(
+    fenetre,
+    text=f"Tu as actuellement {NiveauF} Fermes, Prix actuel : {PrixF}"
+).place(x=500, y=120)
+
+Button(
+    fenetre,
+    text="Acheter",
+    command=upgradeF
+).place(x=500, y=140)
 
 # aide
 Button(
